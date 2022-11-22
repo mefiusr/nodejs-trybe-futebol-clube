@@ -13,7 +13,11 @@ module.exports = {
       role: Sequelize.STRING,
       email: Sequelize.STRING,
       password: Sequelize.STRING,
-    })
+    },
+    {
+      timestamps: false,
+    }
+    )
   },
 
   down: async (queryInterface, _Sequelize) => {

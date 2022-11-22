@@ -12,7 +12,7 @@ module.exports = {
       home_team: Sequelize.INTEGER,
       home_team_goals: Sequelize.INTEGER,
       away_team: Sequelize.INTEGER,
-      away_teams_goals: Sequelize.INTEGER,
+      away_team_goals: Sequelize.INTEGER,
       in_progress: Sequelize.BOOLEAN,
     })
   },
