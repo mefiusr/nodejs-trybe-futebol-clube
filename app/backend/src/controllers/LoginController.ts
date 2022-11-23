@@ -11,4 +11,12 @@ export default class LoginController {
 
     return res.status(status).json({ token: message });
   }
+
+  async getRole(req: Request, res: Response): Promise<Response> {
+    const { authorization } = req.headers;
+    const { email } = req.body.user;
+
+    const role = await this.loginService.getRole(authorization as string, email);
+    return res.status(200).json({ role });
+  }
 }

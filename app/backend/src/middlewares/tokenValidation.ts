@@ -5,13 +5,11 @@ import HttpException from '../utils/http.exception';
 
 dotenv.config();
 
-export default function authMiddleware(req: Request, res: Response, next: NextFunction) {
+export default function authMiddleware(req: Request, _res: Response, next: NextFunction) {
   const { authorization: token } = req.headers;
 
   if (!token) {
     throw new HttpException(401, 'Token not found');
-    // ou
-    // res.status(401).json({ message: 'Token not found' });
   }
 
   try {
@@ -21,9 +19,5 @@ export default function authMiddleware(req: Request, res: Response, next: NextFu
     next();
   } catch (err) {
     throw new HttpException(401, 'Invalid token');
-
-    // ou
-    // const e = res.status(401).json({ message: 'Invalid token' });
-    // next(e);
   }
 }

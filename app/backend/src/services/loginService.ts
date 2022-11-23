@@ -1,10 +1,14 @@
 import { compareSync } from 'bcryptjs';
 import { ModelStatic } from 'sequelize';
+import * as jwt from 'jsonwebtoken';
+import * as dotenv from 'dotenv';
 import HttpException from '../utils/http.exception';
 import TokenGenerate from '../utils/tokenGenerate';
 import Login from './Login';
 import Users from '../database/models/Users';
 import { ILoginAdmin } from '../interfaces/interface.login';
+
+dotenv.config();
 
 export default class LoginService extends Login<ILoginAdmin> {
   constructor(private loginModel: ModelStatic<Users> = Users) {
@@ -21,5 +25,15 @@ export default class LoginService extends Login<ILoginAdmin> {
     const user = await this.loginModel.findOne({ where: { email } });
     LoginService.validatePassword(user, password);
     return { status: 200, message: TokenGenerate.generateToken(email) };
+  }
+
+  async getRole(authorization: string, email: string) {
+    jwt.verify(authorization, process.env.JWT_SECRET as string);
+
+    const role = await this.loginModel.findOne({ where: { email } });
+
+    if (role) {
+      return role.role;
+    }
   }
 }
