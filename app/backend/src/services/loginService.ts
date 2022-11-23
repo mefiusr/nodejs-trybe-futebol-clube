@@ -1,0 +1,25 @@
+import { compareSync } from 'bcryptjs';
+import { ModelStatic } from 'sequelize';
+import HttpException from '../utils/http.exception';
+import TokenGenerate from '../utils/tokenGenerate';
+import Login from './Login';
+import Users from '../database/models/Users';
+import { ILoginAdmin } from '../interfaces/interface.login';
+
+export default class LoginService extends Login<ILoginAdmin> {
+  constructor(private loginModel: ModelStatic<Users> = Users) {
+    super();
+  }
+
+  static validatePassword(user: Users | null, password: string): void {
+    if (!user || !compareSync(password, user.password)) {
+      throw new HttpException(401, 'Incorrect email or password');
+    }
+  }
+
+  async login(email: string, password: string) {
+    const user = await this.loginModel.findOne({ where: { email } });
+    LoginService.validatePassword(user, password);
+    return { status: 200, message: TokenGenerate.generateToken(email) };
+  }
+}
