@@ -1,6 +1,5 @@
 import { compareSync } from 'bcryptjs';
 import { ModelStatic } from 'sequelize';
-import * as jwt from 'jsonwebtoken';
 import * as dotenv from 'dotenv';
 import HttpException from '../utils/http.exception';
 import TokenGenerate from '../utils/tokenGenerate';
@@ -27,9 +26,7 @@ export default class LoginService extends Login<ILoginAdmin> {
     return { status: 200, message: TokenGenerate.generateToken(email) };
   }
 
-  async getRole(authorization: string, email: string) {
-    jwt.verify(authorization, process.env.JWT_SECRET as string);
-
+  async getRole(email: string) {
     const role = await this.loginModel.findOne({ where: { email } });
 
     if (role) {

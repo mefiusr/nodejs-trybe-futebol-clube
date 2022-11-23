@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import * as dotenv from 'dotenv';
-import { verify } from 'jsonwebtoken';
+import { JwtPayload, verify } from 'jsonwebtoken';
 import HttpException from '../utils/http.exception';
 
 dotenv.config();
@@ -13,7 +13,7 @@ export default function authMiddleware(req: Request, _res: Response, next: NextF
   }
 
   try {
-    const decoded = verify(token as string, process.env.JWT_SECRET as string);
+    const decoded = verify(token as string, process.env.JWT_SECRET as string) as JwtPayload;
 
     req.body.user = decoded;
     next();
