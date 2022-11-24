@@ -1,8 +1,12 @@
-export interface ILoginAdmin {
+export interface ILogin {
   email: string;
   password: string;
 }
 
-export interface ILoginUser {
+export interface IMockLogin {
+  id: number;
+  username: string;
+  role: string
+  email: string;
   password: string;
 }
