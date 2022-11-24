@@ -5,11 +5,11 @@ import HttpException from '../utils/http.exception';
 import TokenGenerate from '../utils/tokenGenerate';
 import Login from './Login';
 import Users from '../database/models/Users';
-import { ILoginAdmin } from '../interfaces/interface.login';
+import { ILogin } from '../interfaces/interface.login';
 
 dotenv.config();
 
-export default class LoginService extends Login<ILoginAdmin> {
+export default class LoginService extends Login<ILogin> {
   constructor(private loginModel: ModelStatic<Users> = Users) {
     super();
   }
