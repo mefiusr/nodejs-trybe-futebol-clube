@@ -1,5 +1,6 @@
 import * as sinon from 'sinon';
 import * as chai from 'chai';
+import * as bcrypt from 'bcryptjs';
 // @ts-ignore
 import chaiHttp = require('chai-http');
 
@@ -7,6 +8,8 @@ import App from '../app';
 import Example from '../database/models/ExampleModel';
 
 import { Response } from 'superagent';
+import User from '../database/models/User';
+import { userMock } from './mocks/users.mock';
 
 chai.use(chaiHttp);
 
@@ -33,15 +36,7 @@ const { expect } = chai;
   //   (Example.findOne as sinon.SinonStub).restore();
   // })
 
-  // it('...', async () => {
-  //   chaiHttpResponse = await chai
-  //      .request(app)
-  //      ...
-
-  //   expect(...)
-  // });
-
-//   it('Seu sub-teste', () => {
+  //   it('Seu sub-teste', () => {
 //     expect(false).to.be.eq(true);
 //   });
 // });

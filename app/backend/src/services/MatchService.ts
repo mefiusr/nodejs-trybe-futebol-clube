@@ -1,9 +1,9 @@
 import { ModelStatic } from 'sequelize';
 import Team from '../database/models/Team';
-import Matche from '../database/models/Matche';
+import Match from '../database/models/Match';
 
 export default class MatcheService {
-  constructor(private matcheModel: ModelStatic<Matche> = Matche) {}
+  constructor(private matcheModel: ModelStatic<Match> = Match) {}
 
   async getAllMatches() {
     const matches = this.matcheModel.findAll({

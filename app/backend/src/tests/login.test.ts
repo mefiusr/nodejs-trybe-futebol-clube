@@ -26,9 +26,9 @@ describe('Testes da seção 1', () => {
   })
   describe('Testando a rota /login com POST', () => {
 
-      it.skip('Login com senha válida', async () => {
+      it('Login com senha válida', async () => {
         sinon.stub(User, 'findOne').resolves(userMock as User);
-        sinon.stub(bcrypt, 'compare').resolves(true);
+        sinon.stub(bcrypt, 'compareSync').returns(true);
         
         chaiHttpResponse = await chai
         .request(app)
@@ -45,7 +45,7 @@ describe('Testes da seção 1', () => {
 
       it.skip('Login com senha inválida', async () => {
         sinon.stub(User, 'findOne').resolves(userMock as User);
-        sinon.stub(bcrypt, 'compare').resolves(false);
+        sinon.stub(bcrypt, 'compareSync').returns(false);
 
         chaiHttpResponse = await chai
           .request(app)

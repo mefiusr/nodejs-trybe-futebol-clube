@@ -1,9 +1,9 @@
 import { Router } from 'express';
-import MatcheController from '../controllers/MatcheController';
+import MatchController from '../controllers/MatchController';
 
-const matchesController = new MatcheController();
-const matcheRouter = Router();
+const matchsController = new MatchController();
+const matchRouter = Router();
 
-matcheRouter.get('/', (req, res) => matchesController.getAllTeams(req, res));
+matchRouter.get('/', (req, res) => matchsController.getAllTeams(req, res));
 
-export default matcheRouter;
+export default matchRouter;
