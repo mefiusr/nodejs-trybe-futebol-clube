@@ -79,7 +79,7 @@ describe('Testes da seção 1', () => {
         });
       });
 
-      it('Testa se falha ao tentar fazer login (post) com um email inválido', async () => {
+      it('Testa se falha ao tentar fazer login com um email inválido', async () => {
         chaiHttpResponse = await chai.request(app).post('/login').send({
           "email": 'admin',
           "password": 'secret_admin'
