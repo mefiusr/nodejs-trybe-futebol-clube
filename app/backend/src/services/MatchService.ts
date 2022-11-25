@@ -17,7 +17,15 @@ export default class MatcheService {
   }
 
   async getMatchesInProgress(inProgress: string) {
-    const matchesInProgress = await this.matchModel.findOne({ where: { inProgress } });
-    return matchesInProgress;
+    const xablau = inProgress === 'true';
+    if (inProgress) {
+      const matchesInProgress = await this.matchModel.findAll({ where: { inProgress: xablau },
+        include: [
+          { model: Team, as: 'teamHome', attributes: { exclude: ['id'] } },
+          { model: Team, as: 'teamAway', attributes: { exclude: ['id'] } },
+        ] });
+
+      return matchesInProgress;
+    }
   }
 }
