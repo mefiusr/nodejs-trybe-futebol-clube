@@ -21,22 +21,25 @@ const { expect } = chai;
 describe('Testes da seção 1', () => {
   let chaiHttpResponse: Response;
 
+   after(()=>{
+    (User.findOne as sinon.SinonStub).restore();
+  })
   describe('Testando a rota /login com POST', () => {
 
       it.skip('Login com senha válida', async () => {
         sinon.stub(User, 'findOne').resolves(userMock as User);
-        sinon.stub(LoginService, 'validatePassword').resolves(true);
-
+        sinon.stub(bcrypt, 'compare').resolves(true);
+        
         chaiHttpResponse = await chai
-          .request(app)
-          .post('/login')
-          .send({
-            "email": "admin@admin.com",
-            "password": "secret_admin"
-          });
+        .request(app)
+        .post('/login')
+        .send({
+          "email": "admin@admin.com",
+          "password": "secret_admin"
+        });
 
         expect(chaiHttpResponse.status).to.be.equal(200);
-        (User.findOne as sinon.SinonStub).restore();
+        // (User.findOne as sinon.SinonStub).restore();
         (bcrypt.compare as sinon.SinonStub).restore();
       });
 
@@ -53,7 +56,7 @@ describe('Testes da seção 1', () => {
           });
 
         expect(chaiHttpResponse.status).to.be.equal(401);
-        (User.findOne as sinon.SinonStub).restore();
+        // (User.findOne as sinon.SinonStub).restore();
         (bcrypt.compare as sinon.SinonStub).restore();
       });
 
@@ -101,11 +104,11 @@ describe('Testes da seção 1', () => {
       expect(chaiHttpResponse.body).to.deep.equal({ message: 'Token not found' });
     })
     it('Testa se falha ao tentar fazer uma requisição com um token inválido', async () => {
-      const token = {
+      const header = {
         Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
       }
 
-      chaiHttpResponse = await chai.request(app).get('/login/validate').set(token)
+      chaiHttpResponse = await chai.request(app).get('/login/validate').set(header)
 
       expect(chaiHttpResponse.status).to.be.equal(401);
       expect(chaiHttpResponse.body).to.deep.equal({ message: 'Invalid token' });
