@@ -8,5 +8,4 @@ export interface IMockLogin {
   username: string;
   role: string
   email: string;
-  password: string;
 }

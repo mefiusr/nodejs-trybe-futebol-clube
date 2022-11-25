@@ -2,12 +2,12 @@ import { Model, INTEGER, BOOLEAN } from 'sequelize';
 import db from '.';
 import Team from './Team';
 
-class Matche extends Model {
+class Match extends Model {
   declare id: number;
   declare teamName: string;
 }
 
-Matche.init({
+Match.init({
   id: {
     allowNull: false,
     autoIncrement: true,
@@ -26,9 +26,10 @@ Matche.init({
   timestamps: false,
 });
 
-Team.hasMany(Matche, { foreignKey: 'home_team', as: 'Home' });
-Team.hasMany(Matche, { foreignKey: 'away_team', as: 'Away' });
+Team.hasMany(Match, { foreignKey: 'home_team', as: 'teste' });
+Team.hasMany(Match, { foreignKey: 'away_team', as: 'teste2' });
 
-Matche.belongsTo(Team, { foreignKey: 'id', as: 'Teste2' });
+Match.belongsTo(Team, { foreignKey: 'home_team', as: 'teamHome' });
+Match.belongsTo(Team, { foreignKey: 'away_team', as: 'teamAway' });
 
-export default Matche;
+export default Match;

@@ -8,8 +8,8 @@ export default class MatcheService {
   async getAllMatches() {
     const matches = this.matcheModel.findAll({
       include: [
-        { model: Team, as: 'teams', attributes: { exclude: ['id'] } },
-        { model: Team, as: 'matches', attributes: { exclude: ['id'] } },
+        { model: Team, as: 'teamHome', attributes: { exclude: ['id'] } },
+        { model: Team, as: 'teamAway', attributes: { exclude: ['id'] } },
       ],
     });
 

@@ -19,105 +19,101 @@ const { app } = new App();
 const { expect } = chai;
 
 describe('Testes da seção 1', () => {
-  let chaiHttpResponse: Response;
-
-   after(()=>{
-    (User.findOne as sinon.SinonStub).restore();
+  beforeEach(() => {
+    sinon.restore();
   })
+
   describe('Testando a rota /login com POST', () => {
 
-      it('Login com senha válida', async () => {
-        sinon.stub(User, 'findOne').resolves(userMock as User);
-        sinon.stub(bcrypt, 'compareSync').returns(true);
-        
-        chaiHttpResponse = await chai
+    it('Login com senha válida', async () => {
+      sinon.stub(User, 'findOne').resolves(userMock as User);
+      sinon.stub(bcrypt, 'compareSync').returns(true);
+
+      const chaiHttpResponse = await chai
         .request(app)
         .post('/login')
         .send({
           "email": "admin@admin.com",
           "password": "secret_admin"
-        });
+        })
+      
+      expect(chaiHttpResponse.status).to.be.equal(200);
+    });
 
-        expect(chaiHttpResponse.status).to.be.equal(200);
-        // (User.findOne as sinon.SinonStub).restore();
-        (bcrypt.compare as sinon.SinonStub).restore();
-      });
+    it('Login com senha inválida', async () => {
+      sinon.stub(User, 'findOne').resolves(userMock as User);
+      sinon.stub(bcrypt, 'compareSync').returns(false);
 
-      it.skip('Login com senha inválida', async () => {
-        sinon.stub(User, 'findOne').resolves(userMock as User);
-        sinon.stub(bcrypt, 'compareSync').returns(false);
-
-        chaiHttpResponse = await chai
-          .request(app)
-          .post('/login')
-          .send({
-            "email": "admin@admin.com",
-            "password": "secret"
-          });
-
-        expect(chaiHttpResponse.status).to.be.equal(401);
-        // (User.findOne as sinon.SinonStub).restore();
-        (bcrypt.compare as sinon.SinonStub).restore();
-      });
-
-      it('Testa se falha ao tentar fazer login sem email', async () => {
-        chaiHttpResponse = await chai.request(app).post('/login').send({
-          "email": '',
+      const chaiHttpResponse = await chai
+        .request(app)
+        .post('/login')
+        .send({
+          "email": "admin@admin.com",
           "password": "secret"
-        })
-        expect(chaiHttpResponse.status).to.be.equal(400);
-        expect(chaiHttpResponse.body).to.deep.equal({
-          message: 'All fields must be filled',
         });
-      });
 
-      it('Testa se falha ao tentar fazer login sem password', async () => {
-        chaiHttpResponse = await chai.request(app).post('/login').send({
-          "email": 'admin@admin.com',
-          "password": ''
-        })
-        expect(chaiHttpResponse.status).to.be.equal(400);
-        expect(chaiHttpResponse.body).to.deep.equal({
-          message: 'All fields must be filled',
-        });
-      });
+      expect(chaiHttpResponse.status).to.be.equal(401);
+    });
 
-      it('Testa se falha ao tentar fazer login com um email inválido', async () => {
-        chaiHttpResponse = await chai.request(app).post('/login').send({
-          "email": 'admin',
-          "password": 'secret_admin'
-        })
-        expect(chaiHttpResponse.status).to.be.equal(401);
-        expect(chaiHttpResponse.body).to.deep.equal({
-          message: 'Incorrect email or password',
-        });
+    it('Testa se falha ao tentar fazer login sem email', async () => {
+      const chaiHttpResponse = await chai.request(app).post('/login').send({
+        "email": '',
+        "password": "secret"
+      })
+      expect(chaiHttpResponse.status).to.be.equal(400);
+      expect(chaiHttpResponse.body).to.deep.equal({
+        message: 'All fields must be filled',
       });
+    });
 
+    it('Testa se falha ao tentar fazer login sem password', async () => {
+      const chaiHttpResponse = await chai.request(app).post('/login').send({
+        "email": 'admin@admin.com',
+        "password": ''
+      })
+      expect(chaiHttpResponse.status).to.be.equal(400);
+      expect(chaiHttpResponse.body).to.deep.equal({
+        message: 'All fields must be filled',
+      });
+    });
+
+    it('Testa se falha ao tentar fazer login com um email inválido', async () => {
+      const chaiHttpResponse = await chai.request(app).post('/login').send({
+        "email": 'admin',
+        "password": 'secret_admin'
+      })
+      expect(chaiHttpResponse.status).to.be.equal(401);
+      expect(chaiHttpResponse.body).to.deep.equal({
+        message: 'Incorrect email or password',
+      });
+    });
   })
 
   describe('Testes na rota /login com GET', () => {
     it('Testa se falha ao tentar fazer uma requisição sem um token', async () => {
       const token = {}
-      chaiHttpResponse = await chai.request(app).get('/login/validate').set(token)
+      const chaiHttpResponse = await chai.request(app).get('/login/validate').set(token)
 
       expect(chaiHttpResponse.status).to.be.equal(401);
       expect(chaiHttpResponse.body).to.deep.equal({ message: 'Token not found' });
     })
+
     it('Testa se falha ao tentar fazer uma requisição com um token inválido', async () => {
       const header = {
         Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
       }
 
-      chaiHttpResponse = await chai.request(app).get('/login/validate').set(header)
+      const chaiHttpResponse = await chai.request(app).get('/login/validate').set(header)
 
       expect(chaiHttpResponse.status).to.be.equal(401);
       expect(chaiHttpResponse.body).to.deep.equal({ message: 'Invalid token' });
     })
+
     it('Testa se retorna a role do usuário', async () => {
       sinon.stub(jsonwebtoken, 'verify').resolves({ id: 1 });
       sinon.stub(User, 'findOne').resolves(userMock as User);
 
-      chaiHttpResponse = await chai.request(app).get('/login/validate').auth('token', { type: 'bearer' })
+      const chaiHttpResponse = await chai.request(app).get('/login/validate').auth('token', { type: 'bearer' })
 
       expect(chaiHttpResponse.status).to.be.equal(200);
       expect(chaiHttpResponse.body).to.deep.equal({ role: 'Admin' });
@@ -125,3 +121,4 @@ describe('Testes da seção 1', () => {
 
   })
 })
+

@@ -1,4 +1,4 @@
-import { compareSync } from 'bcryptjs';
+import * as bcrypt from 'bcryptjs';
 import { ModelStatic } from 'sequelize';
 import * as dotenv from 'dotenv';
 import HttpException from '../utils/http.exception';
@@ -15,13 +15,14 @@ export default class LoginService extends Login<ILogin> {
   }
 
   static validatePassword(user: User | null, password: string): void {
-    if (!user || !compareSync(password, user.password)) {
+    if (!user || !bcrypt.compareSync(password, user.password)) {
       throw new HttpException(401, 'Incorrect email or password');
     }
   }
 
   async login(email: string, password: string) {
     const user = await this.loginModel.findOne({ where: { email } });
+
     LoginService.validatePassword(user, password);
     return { status: 200, message: TokenGenerate.generateToken(email) };
   }
