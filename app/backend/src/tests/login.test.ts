@@ -6,7 +6,7 @@ import * as bcrypt from 'bcryptjs';
 import chaiHttp = require('chai-http');
 
 import App from '../app';
-import Users from '../database/models/Users';
+import User from '../database/models/User';
 
 import { Response } from 'superagent';
 import { mockToken, userMock } from './mocks/users.mock';
@@ -23,7 +23,7 @@ describe('Testes da seção 1', () => {
   describe('Testando a rota /login com POST', () => {
 
       it('Login com senha válida', async () => {
-        sinon.stub(Users, 'findOne').resolves(userMock as Users);
+        sinon.stub(User, 'findOne').resolves(userMock as User);
         sinon.stub(bcrypt, 'compare').resolves(true);
 
         chaiHttpResponse = await chai
@@ -35,12 +35,12 @@ describe('Testes da seção 1', () => {
           });
 
         expect(chaiHttpResponse.status).to.be.equal(200);
-        (Users.findOne as sinon.SinonStub).restore();
+        (User.findOne as sinon.SinonStub).restore();
         (bcrypt.compare as sinon.SinonStub).restore();
       });
 
       it('Login com senha inválida', async () => {
-        sinon.stub(Users, 'findOne').resolves(userMock as Users);
+        sinon.stub(User, 'findOne').resolves(userMock as User);
         sinon.stub(bcrypt, 'compare').resolves(false);
 
         chaiHttpResponse = await chai
@@ -52,7 +52,7 @@ describe('Testes da seção 1', () => {
           });
 
         expect(chaiHttpResponse.status).to.be.equal(401);
-        (Users.findOne as sinon.SinonStub).restore();
+        (User.findOne as sinon.SinonStub).restore();
         (bcrypt.compare as sinon.SinonStub).restore();
       });
 

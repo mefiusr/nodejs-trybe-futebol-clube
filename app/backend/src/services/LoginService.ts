@@ -4,17 +4,17 @@ import * as dotenv from 'dotenv';
 import HttpException from '../utils/http.exception';
 import TokenGenerate from '../utils/tokenGenerate';
 import Login from './Login';
-import Users from '../database/models/Users';
+import User from '../database/models/User';
 import { ILogin } from '../interfaces/interface.login';
 
 dotenv.config();
 
 export default class LoginService extends Login<ILogin> {
-  constructor(private loginModel: ModelStatic<Users> = Users) {
+  constructor(private loginModel: ModelStatic<User> = User) {
     super();
   }
 
-  static validatePassword(user: Users | null, password: string): void {
+  static validatePassword(user: User | null, password: string): void {
     if (!user || !compareSync(password, user.password)) {
       throw new HttpException(401, 'Incorrect email or password');
     }
