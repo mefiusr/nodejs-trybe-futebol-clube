@@ -17,14 +17,14 @@ export default class MatcheService {
   }
 
   async getMatchesInProgress(inProgress: string) {
-    const xablau = inProgress === 'true';
+    const trueOrFalse = inProgress === 'true';
+
     if (inProgress) {
-      const matchesInProgress = await this.matchModel.findAll({ where: { inProgress: xablau },
+      const matchesInProgress = await this.matchModel.findAll({ where: { inProgress: trueOrFalse },
         include: [
           { model: Team, as: 'teamHome', attributes: { exclude: ['id'] } },
           { model: Team, as: 'teamAway', attributes: { exclude: ['id'] } },
         ] });
-
       return matchesInProgress;
     }
   }
