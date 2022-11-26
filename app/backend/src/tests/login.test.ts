@@ -8,9 +8,7 @@ import chaiHttp = require('chai-http');
 import App from '../app';
 import User from '../database/models/User';
 
-import { Response } from 'superagent';
-import { userMock, mockToken } from './mocks/users.mock';
-import LoginService from '../services/LoginService';
+import { userMock } from './mocks/users.mock';
 
 chai.use(chaiHttp);
 
