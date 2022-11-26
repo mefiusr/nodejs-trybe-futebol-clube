@@ -2,7 +2,7 @@ import { Request, Response } from 'express';
 import MatchService from '../services/MatchService';
 
 export default class MatcheController {
-  constructor(private matchService = new MatchService()) {}
+  constructor(private matchService = new MatchService()) { }
 
   async getMatches(req: Request, res: Response) {
     const { inProgress } = req.query;

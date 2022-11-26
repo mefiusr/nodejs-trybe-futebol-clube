@@ -11,7 +11,8 @@ export default class TeamsService {
   }
 
   async getTeamById(id: string) {
-    const team = this.teamModel.findByPk(id);
+    const team = await this.teamModel.findByPk(id);
+
     return team;
   }
 }
