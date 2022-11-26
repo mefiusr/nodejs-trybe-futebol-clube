@@ -15,12 +15,19 @@ export default class MatcheController {
 
   async insertNewMatches(req: Request, res: Response) {
     const { homeTeam, awayTeam, homeTeamGoals, awayTeamGoals } = req.body;
-    console.log(homeTeam, awayTeam, homeTeamGoals, awayTeamGoals);
 
     const id = await this.matchService
       .insertNewMatch(homeTeam, awayTeam, homeTeamGoals, awayTeamGoals);
 
     return res.status(201)
       .json({ id, homeTeam, awayTeam, homeTeamGoals, awayTeamGoals, inProgress: true });
+  }
+
+  async updateMatchProgress(req: Request, res: Response) {
+    const { id } = req.params;
+
+    await this.matchService.updateMatchProgress(id);
+
+    res.status(200).json({ message: 'Finished' });
   }
 }

@@ -46,4 +46,10 @@ export default class MatcheService {
 
     return id;
   }
+
+  async updateMatchProgress(id: string) {
+    await this.matchModel.update({ inProgress: false }, { where: { id } });
+
+    return null;
+  }
 }
