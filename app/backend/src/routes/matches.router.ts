@@ -14,5 +14,6 @@ matchRouter.post(
   (req, res) => matchsController.insertNewMatches(req, res),
 );
 matchRouter.patch('/:id/finish', (req, res) => matchsController.updateMatchProgress(req, res));
+matchRouter.patch('/:id', (req, res) => matchsController.updateScoreMatch(req, res));
 
 export default matchRouter;

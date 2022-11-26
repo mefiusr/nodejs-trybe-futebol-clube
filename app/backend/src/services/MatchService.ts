@@ -70,4 +70,8 @@ export default class MatcheService {
 
     return null;
   }
+
+  async updateScoreMatch(id: string, homeTeamGoals: string, awayTeamGoals: string) {
+    await this.matchModel.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
+  }
 }
