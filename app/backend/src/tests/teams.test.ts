@@ -17,6 +17,10 @@ const { expect } = chai;
 
 describe('Testes da seção 2', () => {
   let chaiHttpResponse: Response;
+  
+  beforeEach(() => {
+    sinon.restore();
+  })
 
   describe('Testa GET na rota /teams', () => {
     it('Testa se retorna todos os time', async () => {
@@ -25,16 +29,14 @@ describe('Testes da seção 2', () => {
 
       expect(chaiHttpResponse.status).to.be.equal(200);
       expect(chaiHttpResponse.body).to.deep.equal(teamMock);
-      (Team.findAll as sinon.SinonStub).restore();
-      
     });
+
     it('Testa se retorna um único time', async () => {
       sinon.stub(Team, 'findByPk' ).resolves(teamMock[0] as Team);
       chaiHttpResponse = await chai.request(app).get('/teams/1');
       
       expect(chaiHttpResponse.status).to.be.equal(200);
       expect(chaiHttpResponse.body).to.deep.equal(teamMock[0]);
-      (Team.findByPk as sinon.SinonStub).restore();
     });
   })
 })
