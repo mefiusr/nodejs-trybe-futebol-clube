@@ -28,4 +28,22 @@ export default class MatcheService {
       return matchesInProgress;
     }
   }
+
+  async insertNewMatch(
+    homeTeam: string,
+    awayTeam: string,
+    homeTeamGoals: string,
+    awayTeamGoals: string,
+  ) {
+    const newMatch = await this.matchModel.create({
+      homeTeam,
+      awayTeam,
+      homeTeamGoals,
+      awayTeamGoals,
+      inProgress: true,
+    });
+    const { id } = newMatch.dataValues;
+
+    return id;
+  }
 }
