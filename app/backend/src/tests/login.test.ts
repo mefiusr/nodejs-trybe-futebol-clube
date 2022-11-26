@@ -104,7 +104,7 @@ describe('Testes da seção 1', () => {
       const chaiHttpResponse = await chai.request(app).get('/login/validate').set(header)
 
       expect(chaiHttpResponse.status).to.be.equal(401);
-      expect(chaiHttpResponse.body).to.deep.equal({ message: 'Invalid token' });
+      expect(chaiHttpResponse.body).to.deep.equal({ message: 'Token must be a valid token' });
     })
 
     it('Testa se retorna a role do usuário', async () => {

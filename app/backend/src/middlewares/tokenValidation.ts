@@ -18,6 +18,6 @@ export default function authMiddleware(req: Request, _res: Response, next: NextF
     req.body.user = decoded;
     next();
   } catch (err) {
-    throw new HttpException(401, 'Invalid token');
+    throw new HttpException(401, 'Token must be a valid token');
   }
 }
