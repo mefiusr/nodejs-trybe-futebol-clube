@@ -65,7 +65,6 @@ export default class MatcheService {
       awayTeamGoals,
       inProgress: true,
     });
-    console.log(newMatch);
 
     const { id } = newMatch.dataValues;
 
