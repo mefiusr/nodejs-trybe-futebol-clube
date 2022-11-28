@@ -1,9 +1,7 @@
+import 'dotenv/config';
+import * as jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
-import * as dotenv from 'dotenv';
-import { JwtPayload, verify } from 'jsonwebtoken';
 import HttpException from '../utils/http.exception';
-
-dotenv.config();
 
 export default function authMiddleware(req: Request, _res: Response, next: NextFunction) {
   const { authorization: token } = req.headers;
@@ -13,9 +11,10 @@ export default function authMiddleware(req: Request, _res: Response, next: NextF
   }
 
   try {
-    const decoded = verify(token as string, process.env.JWT_SECRET as string) as JwtPayload;
+    const decoded = jwt.verify(token as string, process.env.JWT_SECRET as string) as jwt.JwtPayload;
 
     req.body.user = decoded;
+
     next();
   } catch (err) {
     throw new HttpException(401, 'Token must be a valid token');

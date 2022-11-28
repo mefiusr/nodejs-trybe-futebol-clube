@@ -60,14 +60,16 @@ export default class MatcheService {
       awayTeamGoals,
       inProgress: true,
     });
+    console.log(newMatch);
+
     const { id } = newMatch.dataValues;
 
     return id;
   }
 
   async updateMatchProgress(id: string) {
-    await this.matchModel.update({ inProgress: false }, { where: { id } });
-
+    const teste = await this.matchModel.update({ inProgress: false }, { where: { id } });
+    console.log(teste);
     return null;
   }
 

@@ -108,10 +108,13 @@ describe('Testes da seção 1', () => {
     })
 
     it('Testa se retorna a role do usuário', async () => {
+      const header = {
+        Authorization: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9'
+      }
       sinon.stub(jsonwebtoken, 'verify').resolves({ id: 1 });
       sinon.stub(User, 'findOne').resolves(userMock as User);
 
-      const chaiHttpResponse = await chai.request(app).get('/login/validate').auth('token', { type: 'bearer' })
+      const chaiHttpResponse = await chai.request(app).get('/login/validate').set(header)
 
       expect(chaiHttpResponse.status).to.be.equal(200);
       expect(chaiHttpResponse.body).to.deep.equal({ role: 'Admin' });
