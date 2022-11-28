@@ -21,6 +21,11 @@ export default class MatcheService {
     return matches;
   }
 
+  async getMatchesFinished() {
+    const matchesFinisheds = await this.matchModel.findAll({ where: { inProgress: false } });
+    return matchesFinisheds;
+  }
+
   async getMatchesInProgress(inProgress: string) {
     const trueOrFalse = inProgress === 'true';
 
