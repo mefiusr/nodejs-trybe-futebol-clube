@@ -1,4 +1,5 @@
 // import Team from '../database/models/Team';
+// import { ITeamMatch } from '../interfaces/ITeam';
 import MatcheService from './MatchService';
 import TeamsService from './TeamsService';
 
@@ -8,12 +9,20 @@ export default class LeaderboardService {
     private teamModel = new TeamsService(),
   ) {}
 
+  // async getNames(matches: ITeamMatch[]) {
+  //   const result = matches
+  //     .map((match) => this.teamModel.getTeamById(match.teamHome.teamName));
+  //   console.log(result);
+
+  //   return Promise.all(result);
+  // }
+
   async getLeaderHome() {
-    const matchesFinished = await this.matchesModel.getMatchesFinished();
+    const matchesFinished = await this.matchesModel.getAllMatches();
 
     const filterHome = matchesFinished.map((match) => {
       const obj = {
-        name: match.dataValues.homeTeam,
+        name: match.dataValues.teamHome.teamName,
         totalPoints: 9,
         totalGames: 3,
         totalVictories: 3,
@@ -24,7 +33,6 @@ export default class LeaderboardService {
         goalsBalance: 6,
         efficiency: '100.00',
       };
-      // const teamsHome = await this.teamModel.getTeamById(match.homeTeam);
       return obj;
     });
     return filterHome;

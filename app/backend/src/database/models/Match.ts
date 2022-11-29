@@ -5,11 +5,6 @@ import Team from './Team';
 class Match extends Model {
   declare id: number;
   declare teamName: string;
-  public homeTeamGoals: any | undefined;
-  public awayTeamGoals: any | undefined;
-  public inProgress: boolean | undefined;
-  teamHome: string | undefined;
-  homeTeam: any;
 }
 
 Match.init({
