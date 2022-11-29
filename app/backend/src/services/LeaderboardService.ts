@@ -43,6 +43,15 @@ export default class LeaderboardService {
     return totalDraws;
   }
 
+  async getTotalLossesHome(idTeamHome: number): Promise<number> {
+    const totalPoints = await this.getTotalPointsHome(idTeamHome);
+    const totalGames = await this.getTotalGamesHome(idTeamHome);
+    const totalDraws = await this.getTotalDrawsHome(idTeamHome);
+    const totalVictories = Math.trunc(totalPoints / 3);
+    const totalLosses = totalGames.length - totalVictories - totalDraws;
+    return totalLosses;
+  }
+
   async getLeaderHome() {
     const matchesFinished = await this.matchesModel.getMatchesFinished();
     const leaderHome: ITeamLeaderBoard[] = [];
@@ -54,7 +63,7 @@ export default class LeaderboardService {
         totalGames: (await this.getTotalGamesHome(match.homeTeam)).length,
         totalVictories: Math.trunc((await this.getTotalPointsHome(match.homeTeam)) / 3),
         totalDraws: await this.getTotalDrawsHome(match.homeTeam),
-        totalLosses: 0,
+        totalLosses: await this.getTotalLossesHome(match.homeTeam),
         goalsFavor: 9,
         goalsOwn: 2,
       };
