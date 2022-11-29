@@ -58,8 +58,18 @@ export default class LeaderboardService {
     return totalGoalsFavor;
   }
 
+  async getGoalsOwnsHome(idTeamHome: number): Promise<number> {
+    const totalGames = await this.getTotalGamesHome(idTeamHome);
+    const totalGoalsOwn = totalGames.reduce((acc, curr) => acc + curr.awayTeamGoals, 0);
+    return totalGoalsOwn;
+  }
+
   async getLeaderHome() {
     const matchesFinished = await this.matchesModel.getMatchesFinished();
+    return this.getScoreHome(matchesFinished);
+  }
+
+  async getScoreHome(matchesFinished: IMatch[]) {
     const leaderHome: ITeamLeaderBoard[] = [];
 
     const result = matchesFinished.map(async (match) => {
@@ -71,11 +81,12 @@ export default class LeaderboardService {
         totalDraws: await this.getTotalDrawsHome(match.homeTeam),
         totalLosses: await this.getTotalLossesHome(match.homeTeam),
         goalsFavor: await this.getGoalsFavorHome(match.homeTeam),
-        goalsOwn: 2,
+        goalsOwn: await this.getGoalsOwnsHome(match.homeTeam),
+        goalsBalance: 6,
+        efficiency: '100.00',
       };
 
       leaderHome.push(obj as unknown as ITeamLeaderBoard);
-      return obj;
     });
 
     await Promise.all(result);
