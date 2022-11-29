@@ -1,10 +1,17 @@
 import { Model, INTEGER, BOOLEAN } from 'sequelize';
+import IMatch from '../../interfaces/IMatch';
 import db from '.';
 import Team from './Team';
 
-class Match extends Model {
+class Match extends Model implements IMatch {
   declare id: number;
-  declare teamName: string;
+  declare homeTeam: number;
+  declare homeTeamGoals: number;
+  declare awayTeam: number;
+  declare awayTeamGoals: number;
+  declare inProgress: boolean;
+  declare teamHome: { teamName: string; };
+  declare teamAway: { teamName: string; };
 }
 
 Match.init({
