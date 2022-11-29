@@ -45,7 +45,7 @@ export default class LeaderboardService {
         name: await this.getNamesHome((match.homeTeam).toString()),
         totalPoints: await this.getTotalPointsHome(match.homeTeam),
         totalGames: (await this.getTotalGamesHome(match.homeTeam)).length,
-        totalVictories: 3,
+        totalVictories: Math.trunc((await this.getTotalPointsHome(match.homeTeam)) / 3),
         totalDraws: 0,
         totalLosses: 0,
         goalsFavor: 9,
