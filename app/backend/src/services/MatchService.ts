@@ -3,6 +3,7 @@ import HttpException from '../utils/http.exception';
 import Team from '../database/models/Team';
 import Match from '../database/models/Match';
 import TeamsService from './TeamsService';
+import IMatch from '../interfaces/IMatch';
 
 export default class MatcheService {
   constructor(
@@ -10,7 +11,7 @@ export default class MatcheService {
     private teamService = new TeamsService(),
   ) { }
 
-  async getAllMatches() {
+  async getAllMatches(): Promise<IMatch[]> {
     const matches = this.matchModel.findAll({
       include: [
         { model: Team, as: 'teamHome', attributes: { exclude: ['id'] } },
@@ -21,12 +22,12 @@ export default class MatcheService {
     return matches;
   }
 
-  async getMatchesFinished() {
+  async getMatchesFinished(): Promise<IMatch[]> {
     const matchesFinisheds = await this.matchModel.findAll({ where: { inProgress: false } });
     return matchesFinisheds;
   }
 
-  async getMatchesInProgress(inProgress: string) {
+  async getMatchesInProgress(inProgress: string): Promise<IMatch[] | undefined> {
     const trueOrFalse = inProgress === 'true';
 
     if (inProgress) {
@@ -41,7 +42,7 @@ export default class MatcheService {
     }
   }
 
-  async validateTeams(homeTeam: string, awayTeam: string) {
+  async validateTeams(homeTeam: string, awayTeam: string): Promise<void | Error> {
     const home = await this.teamService.getTeamById(homeTeam);
     const away = await this.teamService.getTeamById(awayTeam);
 
@@ -55,7 +56,7 @@ export default class MatcheService {
     awayTeam: string,
     homeTeamGoals: string,
     awayTeamGoals: string,
-  ) {
+  ): Promise<number> {
     await this.validateTeams(homeTeam, awayTeam);
 
     const newMatch = await this.matchModel.create({
@@ -71,13 +72,11 @@ export default class MatcheService {
     return id;
   }
 
-  async updateMatchProgress(id: string) {
-    const teste = await this.matchModel.update({ inProgress: false }, { where: { id } });
-    console.log(teste);
-    return null;
+  async updateMatchProgress(id: string): Promise<void> {
+    await this.matchModel.update({ inProgress: false }, { where: { id } });
   }
 
-  async updateScoreMatch(id: string, homeTeamGoals: string, awayTeamGoals: string) {
+  async updateScoreMatch(id: string, homeTeamGoals: string, awayTeamGoals: string): Promise<void> {
     await this.matchModel.update({ homeTeamGoals, awayTeamGoals }, { where: { id } });
   }
 }
