@@ -10,3 +10,8 @@ export interface ITeamLeaderBoard {
   goalsBalance: number;
   efficiency: string;
 }
+
+export interface ITeam {
+  id: number;
+  teamName: string;
+}
