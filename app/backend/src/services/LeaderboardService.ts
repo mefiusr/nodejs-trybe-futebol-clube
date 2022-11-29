@@ -7,7 +7,7 @@ export default class LeaderboardService {
   constructor(
     private matchesModel = new MatcheService(),
     private teamModel = new TeamsService(),
-  ) {}
+  ) { }
 
   async getNamesHome(idTeamHome: string): Promise<string | undefined> {
     const teams = await this.teamModel.getTeamById(idTeamHome);
@@ -23,15 +23,15 @@ export default class LeaderboardService {
 
   async getTotalPointsHome(idTeamHome: number): Promise<number> {
     const data = await this.getTotalGamesHome(idTeamHome);
-    const totalPoints = data
-      .reduce((acc, curr) => {
-        if (curr.homeTeamGoals > curr.awayTeamGoals) {
-          return acc + 3;
-        } if (curr.homeTeamGoals === curr.awayTeamGoals) {
-          return acc + 1;
-        }
-        return acc;
-      }, 0);
+    const totalPoints = data.reduce((acc, curr) => {
+      if (curr.homeTeamGoals > curr.awayTeamGoals) {
+        return acc + 3;
+      }
+      if (curr.homeTeamGoals === curr.awayTeamGoals) {
+        return acc + 1;
+      }
+      return acc;
+    }, 0);
 
     return totalPoints;
   }
@@ -39,7 +39,7 @@ export default class LeaderboardService {
   async getTotalDrawsHome(idTeamHome: number): Promise<number> {
     const totalPoints = await this.getTotalPointsHome(idTeamHome);
     const totalVictories = Math.trunc(totalPoints / 3);
-    const totalDraws = totalPoints - (totalVictories * 3);
+    const totalDraws = totalPoints - totalVictories * 3;
     return totalDraws;
   }
 
@@ -54,13 +54,19 @@ export default class LeaderboardService {
 
   async getGoalsFavorHome(idTeamHome: number): Promise<number> {
     const totalGames = await this.getTotalGamesHome(idTeamHome);
-    const totalGoalsFavor = totalGames.reduce((acc, curr) => acc + curr.homeTeamGoals, 0);
+    const totalGoalsFavor = totalGames.reduce(
+      (acc, curr) => acc + curr.homeTeamGoals,
+      0,
+    );
     return totalGoalsFavor;
   }
 
   async getGoalsOwnsHome(idTeamHome: number): Promise<number> {
     const totalGames = await this.getTotalGamesHome(idTeamHome);
-    const totalGoalsOwn = totalGames.reduce((acc, curr) => acc + curr.awayTeamGoals, 0);
+    const totalGoalsOwn = totalGames.reduce(
+      (acc, curr) => acc + curr.awayTeamGoals,
+      0,
+    );
     return totalGoalsOwn;
   }
 
@@ -84,15 +90,25 @@ export default class LeaderboardService {
     return efficiency;
   }
 
+  private static sortScore(leaderHome: ITeamLeaderBoard[]): ITeamLeaderBoard[] {
+    return leaderHome.sort(
+      (a, b) =>
+        b.totalPoints - a.totalPoints
+        || b.goalsBalance - a.goalsBalance
+        || b.goalsFavor - a.goalsFavor
+        || a.goalsOwn - b.goalsOwn,
+    );
+  }
+
   async getScoreHome(matchesFinished: IMatch[]) {
     const leaderHome: ITeamLeaderBoard[] = [];
 
     const result = matchesFinished.map(async (match) => {
       const obj = {
-        name: await this.getNamesHome((match.homeTeam).toString()),
+        name: await this.getNamesHome(match.homeTeam.toString()),
         totalPoints: await this.getTotalPointsHome(match.homeTeam),
         totalGames: (await this.getTotalGamesHome(match.homeTeam)).length,
-        totalVictories: Math.trunc((await this.getTotalPointsHome(match.homeTeam)) / 3),
+        totalVictories: (await this.getTotalPointsHome(match.homeTeam)).toFixed(1),
         totalDraws: await this.getTotalDrawsHome(match.homeTeam),
         totalLosses: await this.getTotalLossesHome(match.homeTeam),
         goalsFavor: await this.getGoalsFavorHome(match.homeTeam),
@@ -106,6 +122,6 @@ export default class LeaderboardService {
 
     await Promise.all(result);
 
-    return leaderHome;
+    return LeaderboardService.sortScore(leaderHome);
   }
 }
