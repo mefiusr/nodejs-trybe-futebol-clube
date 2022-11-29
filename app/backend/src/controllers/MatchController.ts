@@ -4,7 +4,7 @@ import MatchService from '../services/MatchService';
 export default class MatcheController {
   constructor(private matchService = new MatchService()) { }
 
-  async getMatches(req: Request, res: Response) {
+  async getMatches(req: Request, res: Response): Promise<Response> {
     const { inProgress } = req.query;
 
     const isQuery = inProgress === undefined
@@ -13,7 +13,7 @@ export default class MatcheController {
     return res.status(200).json(isQuery);
   }
 
-  async insertNewMatches(req: Request, res: Response) {
+  async insertNewMatches(req: Request, res: Response): Promise<Response> {
     const { homeTeam, awayTeam, homeTeamGoals, awayTeamGoals } = req.body;
 
     const id = await this.matchService
@@ -23,7 +23,7 @@ export default class MatcheController {
       .json({ id, homeTeam, awayTeam, homeTeamGoals, awayTeamGoals, inProgress: true });
   }
 
-  async updateMatchProgress(req: Request, res: Response) {
+  async updateMatchProgress(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
 
     await this.matchService.updateMatchProgress(id);
@@ -31,7 +31,7 @@ export default class MatcheController {
     res.status(200).json({ message: 'Finished' });
   }
 
-  async updateScoreMatch(req: Request, res: Response) {
+  async updateScoreMatch(req: Request, res: Response): Promise<void> {
     const { id } = req.params;
     const { homeTeamGoals, awayTeamGoals } = req.body;
 
