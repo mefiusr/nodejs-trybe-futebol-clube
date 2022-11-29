@@ -76,6 +76,14 @@ export default class LeaderboardService {
     return goalsBalance;
   }
 
+  async getEfficiencyHome(idTeamHome: number): Promise<number> {
+    const points = await this.getTotalPointsHome(idTeamHome);
+    const games = (await this.getTotalGamesHome(idTeamHome)).length;
+    const eff = points / (games * 3);
+    const efficiency = eff * 100;
+    return efficiency;
+  }
+
   async getScoreHome(matchesFinished: IMatch[]) {
     const leaderHome: ITeamLeaderBoard[] = [];
 
@@ -90,7 +98,7 @@ export default class LeaderboardService {
         goalsFavor: await this.getGoalsFavorHome(match.homeTeam),
         goalsOwn: await this.getGoalsOwnsHome(match.homeTeam),
         goalsBalance: await this.getGoalsBalanceHome(match.homeTeam),
-        efficiency: '100.00',
+        efficiency: (await this.getEfficiencyHome(match.homeTeam)).toFixed(2),
       };
 
       leaderHome.push(obj as unknown as ITeamLeaderBoard);
