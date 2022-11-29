@@ -1,6 +1,4 @@
-import ITeamMock from '../../interfaces/ITeam';
-
-const teamMock: ITeamMock[] = [
+const teamMock = [
   {
     id: 1,
     teamName: "Vasco da Gama"
