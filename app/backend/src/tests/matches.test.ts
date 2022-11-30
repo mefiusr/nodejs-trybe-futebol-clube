@@ -81,8 +81,8 @@ describe("Testes da seção 3", () => {
     });
 
     it.skip("Testa se criou uma partida", async () => {
-      // sinon.stub(jwt, 'verify').resolves({ id: 9 });
-      sinon.stub(Match, "create").resolves(sucessMatchMock as Match);
+      sinon.stub(jwt, 'verify').resolves({ id: 9 });
+      sinon.stub(Match, "create").resolves(1 as any);
 
       chaiHttpResponse = await chai
         .request(app)
