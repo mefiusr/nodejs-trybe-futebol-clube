@@ -85,7 +85,7 @@ export default class LeaderboardService {
     return efficiency;
   }
 
-  private static sortScore(leaderHome: ITeamLeaderBoard[]): ITeamLeaderBoard[] {
+  static sortScore(leaderHome: ITeamLeaderBoard[]): ITeamLeaderBoard[] {
     return leaderHome.sort(
       (a, b) =>
         b.totalPoints - a.totalPoints
