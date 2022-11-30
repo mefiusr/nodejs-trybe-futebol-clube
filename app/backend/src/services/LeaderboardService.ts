@@ -141,9 +141,9 @@ export default class LeaderboardService {
   async getLeaderBoardAway(): Promise<ITeamLeaderBoard[]> {
     const setResult = new Set();
 
-    const leaderHome = await this.getLeaderAway();
+    const leaderAway = await this.getLeaderAway();
 
-    const boardLeader = leaderHome.filter((e) => {
+    const boardLeader = leaderAway.filter((e) => {
       const duplicatedTeam = setResult.has(e.name);
       setResult.add(e.name);
       return !duplicatedTeam;
