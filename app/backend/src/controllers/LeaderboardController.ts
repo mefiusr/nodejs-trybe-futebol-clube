@@ -9,4 +9,10 @@ export default class LeaderboardController {
 
     res.status(200).json(result);
   }
+
+  async getScoreAway(_req: Request, res: Response): Promise<void> {
+    const result = await this.matchService.getLeaderBoardAway();
+
+    res.status(200).json(result);
+  }
 }
