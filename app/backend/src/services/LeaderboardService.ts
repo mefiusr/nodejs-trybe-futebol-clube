@@ -70,11 +70,6 @@ export default class LeaderboardService {
     return totalGoalsOwn;
   }
 
-  async getLeaderHome(): Promise<ITeamLeaderBoard[]> {
-    const matchesFinished = await this.matchesModel.getMatchesFinished();
-    return this.getScoreHome(matchesFinished);
-  }
-
   async getGoalsBalanceHome(idTeamHome: number): Promise<number> {
     const goalsFavor = await this.getGoalsFavorHome(idTeamHome);
     const goalsOwn = await this.getGoalsOwnsHome(idTeamHome);
@@ -100,6 +95,24 @@ export default class LeaderboardService {
     );
   }
 
+  async getLeaderHome(): Promise<ITeamLeaderBoard[]> {
+    const matchesFinished = await this.matchesModel.getMatchesFinished();
+    return this.getScoreHome(matchesFinished);
+  }
+
+  async getLeaderBoard(): Promise<ITeamLeaderBoard[]> {
+    const setResult = new Set();
+
+    const leaderHome = await this.getLeaderHome();
+
+    const result = leaderHome.filter((item) => {
+      const duplicatedTeam = setResult.has(item.name);
+      setResult.add(item.name);
+      return !duplicatedTeam;
+    });
+    return LeaderboardService.sortScore(result);
+  }
+
   async getScoreHome(matchesFinished: IMatch[]) {
     const leaderHome: ITeamLeaderBoard[] = [];
 
@@ -108,7 +121,7 @@ export default class LeaderboardService {
         name: await this.getNamesHome(match.homeTeam.toString()),
         totalPoints: await this.getTotalPointsHome(match.homeTeam),
         totalGames: (await this.getTotalGamesHome(match.homeTeam)).length,
-        totalVictories: (await this.getTotalPointsHome(match.homeTeam)).toFixed(1),
+        totalVictories: Math.trunc((await this.getTotalPointsHome(match.homeTeam) / 3)),
         totalDraws: await this.getTotalDrawsHome(match.homeTeam),
         totalLosses: await this.getTotalLossesHome(match.homeTeam),
         goalsFavor: await this.getGoalsFavorHome(match.homeTeam),
@@ -121,7 +134,6 @@ export default class LeaderboardService {
     });
 
     await Promise.all(result);
-
-    return LeaderboardService.sortScore(leaderHome);
+    return leaderHome;
   }
 }

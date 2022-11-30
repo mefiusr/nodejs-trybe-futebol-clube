@@ -5,7 +5,7 @@ export default class LeaderboardController {
   constructor(private matchService = new LeaderboardService()) {}
 
   async getScoreHome(_req: Request, res: Response): Promise<void> {
-    const result = await this.matchService.getLeaderHome();
+    const result = await this.matchService.getLeaderBoard();
 
     res.status(200).json(result);
   }
