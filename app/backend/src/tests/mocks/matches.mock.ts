@@ -99,7 +99,7 @@ export const newMatchMock = {
 }
 
 export const sucessMatchMock = {
-  id: 1,
+  id: 12,
   homeTeam: 16,
   homeTeamGoals: 2,
   awayTeam: 8,
@@ -107,4 +107,4 @@ export const sucessMatchMock = {
   inProgress: true,
 }
 
-export const mockTeam = [ { id: 16, teamName: 'São Paulo'}, { id: 8, teamName: 'Santos' } ];
+export const mockTeam = { id: 16, teamName: 'São Paulo'};

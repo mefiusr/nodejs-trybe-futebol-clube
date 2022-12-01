@@ -168,7 +168,6 @@ export default class LeaderboardService {
 
       leader.push(obj as unknown as ITeamLeaderBoard);
     });
-
     await Promise.all(result);
     return leader;
   }

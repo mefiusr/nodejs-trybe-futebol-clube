@@ -13,6 +13,7 @@ import {
   matchesInProgressMock,
   matchesMock,
   mockTeam,
+  sucessMatchMock,
 } from "./mocks/matches.mock";
 import Team from "../database/models/Team";
 
@@ -83,9 +84,7 @@ describe("Testes da seção 3", () => {
     it("Testa se criou uma partida", async () => {
       sinon.stub(jwt, 'verify').resolves({ id: 12 });
       sinon.stub(Team, 'findByPk').resolves(mockTeam as any);
-      sinon.stub(Match, "create").resolves(1 as any);
-
-      const token = { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' }
+      sinon.stub(Match, "create").resolves(12 as any);
 
       chaiHttpResponse = await chai
         .request(app)
@@ -95,10 +94,11 @@ describe("Testes da seção 3", () => {
           awayTeam: 8,
           homeTeamGoals: 2,
           awayTeamGoals: 2,
-        }).auth(token.token, { type: 'bearer' });
+        }).set("Authorization", 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9')
 
       expect(chaiHttpResponse.status).to.be.equal(201);
-      expect(chaiHttpResponse.body).to.deep.equal(1);
+
+      expect(chaiHttpResponse.body).to.deep.equal(sucessMatchMock);
     });
 
     it("Falha ao tentar inserir um time mandante igual ao time visitante", async () => {
