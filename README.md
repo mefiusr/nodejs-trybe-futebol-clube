@@ -8,6 +8,9 @@ Desenvolvi uma API (utilizando o método TDD) e também integrei - através do d
 
 Construi um back-end dockerizado utilizando modelagem de dados através do Sequelize e fiz os relacionamentos entre as tabelas.
 
+![image](https://user-images.githubusercontent.com/83560101/205159385-2ec0d63e-d131-470b-8a1f-9d316d9bf7cd.png)
+
+
 ## ⚙️ Funcionalidades
 
 ✅ Fazer login;
