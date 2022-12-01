@@ -106,3 +106,5 @@ export const sucessMatchMock = {
   awayTeamGoals: 2,
   inProgress: true,
 }
+
+export const mockTeam = [ { id: 16, teamName: 'São Paulo'}, { id: 8, teamName: 'Santos' } ];

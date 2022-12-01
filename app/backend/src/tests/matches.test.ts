@@ -12,9 +12,9 @@ import {
   matchesFinishedsMock,
   matchesInProgressMock,
   matchesMock,
-  newMatchMock,
-  sucessMatchMock,
+  mockTeam,
 } from "./mocks/matches.mock";
+import Team from "../database/models/Team";
 
 chai.use(chaiHttp);
 
@@ -80,18 +80,25 @@ describe("Testes da seção 3", () => {
       expect(chaiHttpResponse.body).to.deep.equal({ message: 'Finished' });
     });
 
-    it.skip("Testa se criou uma partida", async () => {
-      sinon.stub(jwt, 'verify').resolves({ id: 9 });
+    it("Testa se criou uma partida", async () => {
+      sinon.stub(jwt, 'verify').resolves({ id: 12 });
+      sinon.stub(Team, 'findByPk').resolves(mockTeam as any);
       sinon.stub(Match, "create").resolves(1 as any);
+
+      const token = { token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9' }
 
       chaiHttpResponse = await chai
         .request(app)
         .post("/matches")
-        .send(newMatchMock)
-        .set("authorization", "token");
+        .send({
+          homeTeam: 16,
+          awayTeam: 8,
+          homeTeamGoals: 2,
+          awayTeamGoals: 2,
+        }).auth(token.token, { type: 'bearer' });
 
       expect(chaiHttpResponse.status).to.be.equal(201);
-      expect(chaiHttpResponse.body).to.deep.equal(sucessMatchMock);
+      expect(chaiHttpResponse.body).to.deep.equal(1);
     });
 
     it("Falha ao tentar inserir um time mandante igual ao time visitante", async () => {
@@ -113,8 +120,9 @@ describe("Testes da seção 3", () => {
       });
     });
 
-    it.skip("Falha se um time não existir", async () => {
+    it("Falha se um time não existir", async () => {
       sinon.stub(jwt, "verify").resolves({ id: 12 });
+      sinon.stub(Team, 'findByPk').resolves(null);
       chaiHttpResponse = await chai
         .request(app)
         .post("/matches")
@@ -126,7 +134,7 @@ describe("Testes da seção 3", () => {
         })
         .set("Authorization", "token");
 
-      expect(chaiHttpResponse.status).to.be.equal(401);
+      expect(chaiHttpResponse.status).to.be.equal(404);
       expect(chaiHttpResponse.body).to.deep.equal({
         message: "There is no team with such id!",
       });
