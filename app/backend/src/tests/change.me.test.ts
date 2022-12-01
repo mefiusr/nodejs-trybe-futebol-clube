@@ -1,21 +1,20 @@
-import * as sinon from 'sinon';
-import * as chai from 'chai';
-import * as bcrypt from 'bcryptjs';
-// @ts-ignore
-import chaiHttp = require('chai-http');
+// import * as sinon from 'sinon';
+// import * as chai from 'chai';
+// import * as bcrypt from 'bcryptjs';
+// // @ts-ignore
+// import chaiHttp = require('chai-http');
 
-import App from '../app';
-import Example from '../database/models/ExampleModel';
+// import App from '../app';
 
-import { Response } from 'superagent';
-import User from '../database/models/User';
-import { userMock } from './mocks/users.mock';
+// import { Response } from 'superagent';
+// import User from '../database/models/User';
+// import { userMock } from './mocks/users.mock';
 
-chai.use(chaiHttp);
+// chai.use(chaiHttp);
 
-const { app } = new App();
+// const { app } = new App();
 
-const { expect } = chai;
+// const { expect } = chai;
 
 // describe('Seu teste', () => {
   /**
