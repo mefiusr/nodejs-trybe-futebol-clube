@@ -43,8 +43,8 @@ export default class MatcheService {
   }
 
   async validateTeams(homeTeam: string, awayTeam: string): Promise<void | Error> {
-    const home = await this.teamService.getTeamById(homeTeam);
-    const away = await this.teamService.getTeamById(awayTeam);
+    const home = await this.teamService.getTeamById(+homeTeam);
+    const away = await this.teamService.getTeamById(+awayTeam);
 
     if (!home || !away) {
       throw new HttpException(404, 'There is no team with such id!');

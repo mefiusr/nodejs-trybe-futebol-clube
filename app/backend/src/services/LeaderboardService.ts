@@ -9,20 +9,25 @@ export default class LeaderboardService {
     private teamModel = new TeamsService(),
   ) { }
 
-  async getNames(idTeam: string): Promise<string | undefined> {
-    const teams = await this.teamModel.getTeamById(idTeam);
+  async getNames(match: IMatch, game: string): Promise<string | undefined> {
+    if (game === 'home') {
+      const teams = await this.teamModel.getTeamById(match.homeTeam);
+      return teams?.teamName;
+    }
+    const teams = await this.teamModel.getTeamById(match.awayTeam);
     return teams?.teamName;
   }
 
-  async getTotalGamesHome(idTeamHome: number): Promise<IMatch[]> {
+  async getTotalGames(match: IMatch, game: string): Promise<IMatch[]> {
     const data = await this.matchesModel.getMatchesFinished();
-    const totalGames = data.filter((game) => game.homeTeam === idTeamHome);
-
-    return totalGames;
+    if (game === 'home') {
+      return data.filter((e) => e.homeTeam === match.homeTeam);
+    }
+    return data.filter((e) => e.awayTeam === match.awayTeam);
   }
 
-  async getTotalPointsHome(idTeamHome: number): Promise<number> {
-    const data = await this.getTotalGamesHome(idTeamHome);
+  async getTotalPointsHome(match: IMatch, game: string): Promise<number> {
+    const data = await this.getTotalGames(match, game);
     const totalPoints = data.reduce((acc, curr) => {
       if (curr.homeTeamGoals > curr.awayTeamGoals) {
         return acc + 3;
@@ -36,157 +41,8 @@ export default class LeaderboardService {
     return totalPoints;
   }
 
-  async getTotalDrawsHome(idTeamHome: number): Promise<number> {
-    const totalPoints = await this.getTotalPointsHome(idTeamHome);
-    const totalVictories = Math.trunc(totalPoints / 3);
-    const totalDraws = totalPoints - totalVictories * 3;
-    return totalDraws;
-  }
-
-  async getTotalLossesHome(idTeamHome: number): Promise<number> {
-    const totalPoints = await this.getTotalPointsHome(idTeamHome);
-    const totalGames = await this.getTotalGamesHome(idTeamHome);
-    const totalDraws = await this.getTotalDrawsHome(idTeamHome);
-    const totalVictories = Math.trunc(totalPoints / 3);
-    const totalLosses = totalGames.length - totalVictories - totalDraws;
-    return totalLosses;
-  }
-
-  async getGoalsFavorHome(idTeamHome: number): Promise<number> {
-    const totalGames = await this.getTotalGamesHome(idTeamHome);
-    const totalGoalsFavor = totalGames.reduce(
-      (acc, curr) => acc + curr.homeTeamGoals,
-      0,
-    );
-    return totalGoalsFavor;
-  }
-
-  async getGoalsOwnsHome(idTeamHome: number): Promise<number> {
-    const totalGames = await this.getTotalGamesHome(idTeamHome);
-    const totalGoalsOwn = totalGames.reduce(
-      (acc, curr) => acc + curr.awayTeamGoals,
-      0,
-    );
-    return totalGoalsOwn;
-  }
-
-  async getGoalsBalanceHome(idTeamHome: number): Promise<number> {
-    const goalsFavor = await this.getGoalsFavorHome(idTeamHome);
-    const goalsOwn = await this.getGoalsOwnsHome(idTeamHome);
-    const goalsBalance = goalsFavor - goalsOwn;
-    return goalsBalance;
-  }
-
-  async getEfficiencyHome(idTeamHome: number): Promise<number> {
-    const points = await this.getTotalPointsHome(idTeamHome);
-    const games = (await this.getTotalGamesHome(idTeamHome)).length;
-    const eff = points / (games * 3);
-    const efficiency = eff * 100;
-    return efficiency;
-  }
-
-  static sortScore(leaderHome: ITeamLeaderBoard[]): ITeamLeaderBoard[] {
-    return leaderHome.sort(
-      (a, b) =>
-        b.totalPoints - a.totalPoints
-        || b.goalsBalance - a.goalsBalance
-        || b.goalsFavor - a.goalsFavor
-        || a.goalsOwn - b.goalsOwn,
-    );
-  }
-
-  async getLeaderBoard(): Promise<ITeamLeaderBoard[]> {
-    const setResult = new Set();
-
-    const leaderHome = await this.getLeaderHome();
-
-    const boardLeader = leaderHome.filter((item) => {
-      const duplicatedTeam = setResult.has(item.name);
-      setResult.add(item.name);
-      return !duplicatedTeam;
-    });
-    return LeaderboardService.sortScore(boardLeader);
-  }
-
-  async getLeaderHome(): Promise<ITeamLeaderBoard[]> {
-    const matchesFinished = await this.matchesModel.getMatchesFinished();
-    return this.getScoreHome(matchesFinished);
-  }
-
-  async getScoreHome(matchesFinished: IMatch[]) {
-    const leaderHome: ITeamLeaderBoard[] = [];
-
-    const result = matchesFinished.map(async (match) => {
-      const obj = {
-        name: await this.getNames(match.homeTeam.toString()),
-        totalPoints: await this.getTotalPointsHome(match.homeTeam),
-        totalGames: (await this.getTotalGamesHome(match.homeTeam)).length,
-        totalVictories: Math.trunc((await this.getTotalPointsHome(match.homeTeam) / 3)),
-        totalDraws: await this.getTotalDrawsHome(match.homeTeam),
-        totalLosses: await this.getTotalLossesHome(match.homeTeam),
-        goalsFavor: await this.getGoalsFavorHome(match.homeTeam),
-        goalsOwn: await this.getGoalsOwnsHome(match.homeTeam),
-        goalsBalance: await this.getGoalsBalanceHome(match.homeTeam),
-        efficiency: (await this.getEfficiencyHome(match.homeTeam)).toFixed(2),
-      };
-
-      leaderHome.push(obj as unknown as ITeamLeaderBoard);
-    });
-
-    await Promise.all(result);
-    return leaderHome;
-  }
-
-  // LOGICA PARA TIME AWAY
-  async getLeaderBoardAway(): Promise<ITeamLeaderBoard[]> {
-    const setResult = new Set();
-
-    const leaderAway = await this.getLeaderAway();
-
-    const boardLeader = leaderAway.filter((e) => {
-      const duplicatedTeam = setResult.has(e.name);
-      setResult.add(e.name);
-      return !duplicatedTeam;
-    });
-    return LeaderboardService.sortScore(boardLeader);
-  }
-
-  async getLeaderAway(): Promise<ITeamLeaderBoard[]> {
-    const matchesFinished = await this.matchesModel.getMatchesFinished();
-    return this.getScoreAway(matchesFinished);
-  }
-
-  async getScoreAway(matchesFinished: IMatch[]) {
-    const leaderAway: ITeamLeaderBoard[] = [];
-
-    const result = matchesFinished.map(async (match) => {
-      const obj = {
-        name: await this.getNames(match.awayTeam.toString()),
-        totalPoints: await this.getTotalPointsAway(match.awayTeam),
-        totalGames: (await this.getTotalGamesAway(match.awayTeam)).length,
-        totalVictories: Math.trunc((await this.getTotalPointsAway(match.awayTeam) / 3)),
-        totalDraws: await this.getTotalDrawsAway(match.awayTeam),
-        totalLosses: await this.getTotalLossesAway(match.awayTeam),
-        goalsFavor: await this.getGoalsFavorAway(match.awayTeam),
-        goalsOwn: await this.getGoalsOwnsAway(match.awayTeam),
-        goalsBalance: await this.getGoalsBalanceAway(match.awayTeam),
-        efficiency: (await this.getEfficiencyAway(match.awayTeam)).toFixed(2),
-      };
-
-      leaderAway.push(obj as unknown as ITeamLeaderBoard);
-    });
-    await Promise.all(result);
-    return leaderAway;
-  }
-
-  async getTotalGamesAway(idTeamAway: number): Promise<IMatch[]> {
-    const data = await this.matchesModel.getMatchesFinished();
-    const totalGames = data.filter((game) => game.awayTeam === idTeamAway);
-    return totalGames;
-  }
-
-  async getTotalPointsAway(idTeamAway: number): Promise<number> {
-    const data = await this.getTotalGamesAway(idTeamAway);
+  async getTotalPointsAway(match: IMatch, game: string): Promise<number> {
+    const data = await this.getTotalGames(match, game);
     const totalPoints = data.reduce((acc, curr) => {
       if (curr.awayTeamGoals > curr.homeTeamGoals) {
         return acc + 3;
@@ -199,52 +55,121 @@ export default class LeaderboardService {
     return totalPoints;
   }
 
-  async getTotalDrawsAway(idTeamAway: number): Promise<number> {
-    const totalPoints = await this.getTotalPointsAway(idTeamAway);
+  async getTotalPoints(match: IMatch, game: string) {
+    if (game === 'home') {
+      return this.getTotalPointsHome(match, game);
+    }
+    return this.getTotalPointsAway(match, game);
+  }
+
+  async getTotalDraws(match: IMatch, game: string): Promise<number> {
+    const totalPoints = await this.getTotalPoints(match, game);
     const totalVictories = Math.trunc(totalPoints / 3);
     const totalDraws = totalPoints - totalVictories * 3;
     return totalDraws;
   }
 
-  async getTotalLossesAway(idTeamAway: number): Promise<number> {
-    const totalPoints = await this.getTotalPointsAway(idTeamAway);
-    const totalGames = await this.getTotalGamesAway(idTeamAway);
-    const totalDraws = await this.getTotalDrawsAway(idTeamAway);
+  async getTotalLosses(match: IMatch, game: string): Promise<number> {
+    const totalPoints = await this.getTotalPoints(match, game);
+    const totalGames = await this.getTotalGames(match, game);
+    const totalDraws = await this.getTotalDraws(match, game);
     const totalVictories = Math.trunc(totalPoints / 3);
     const totalLosses = totalGames.length - totalVictories - totalDraws;
     return totalLosses;
   }
 
-  async getGoalsFavorAway(idTeamAway: number): Promise<number> {
-    const totalGames = await this.getTotalGamesAway(idTeamAway);
-    const totalGoalsFavor = totalGames.reduce(
+  async getGoalsFavor(match: IMatch, game: string): Promise<number> {
+    const totalGames = await this.getTotalGames(match, game);
+    if (game === 'home') {
+      return totalGames.reduce(
+        (acc, curr) => acc + curr.homeTeamGoals,
+        0,
+      );
+    }
+    return totalGames.reduce(
       (acc, curr) => acc + curr.awayTeamGoals,
       0,
     );
-    return totalGoalsFavor;
   }
 
-  async getGoalsOwnsAway(idTeamAway: number): Promise<number> {
-    const totalGames = await this.getTotalGamesAway(idTeamAway);
-    const totalGoalsOwn = totalGames.reduce(
+  async getGoalsOwns(match: IMatch, game: string): Promise<number> {
+    const totalGames = await this.getTotalGames(match, game);
+    if (game === 'home') {
+      return totalGames.reduce(
+        (acc, curr) => acc + curr.awayTeamGoals,
+        0,
+      );
+    }
+    return totalGames.reduce(
       (acc, curr) => acc + curr.homeTeamGoals,
       0,
     );
-    return totalGoalsOwn;
   }
 
-  async getGoalsBalanceAway(idTeamAway: number): Promise<number> {
-    const goalsFavor = await this.getGoalsFavorAway(idTeamAway);
-    const goalsOwn = await this.getGoalsOwnsAway(idTeamAway);
+  async getGoalsBalance(match: IMatch, game: string): Promise<number> {
+    const goalsFavor = await this.getGoalsFavor(match, game);
+    const goalsOwn = await this.getGoalsOwns(match, game);
     const goalsBalance = goalsFavor - goalsOwn;
     return goalsBalance;
   }
 
-  async getEfficiencyAway(idTeamAway: number): Promise<number> {
-    const points = await this.getTotalPointsAway(idTeamAway);
-    const games = (await this.getTotalGamesAway(idTeamAway)).length;
+  async getEfficiency(match: IMatch, game: string): Promise<number> {
+    const points = await this.getTotalPoints(match, game);
+    const games = (await this.getTotalGames(match, game)).length;
     const eff = points / (games * 3);
     const efficiency = eff * 100;
     return efficiency;
+  }
+
+  static sortScore(leadership: ITeamLeaderBoard[]): ITeamLeaderBoard[] {
+    return leadership.sort(
+      (a, b) =>
+        b.totalPoints - a.totalPoints
+        || b.goalsBalance - a.goalsBalance
+        || b.goalsFavor - a.goalsFavor
+        || a.goalsOwn - b.goalsOwn,
+    );
+  }
+
+  async getLeaderBoard(game: string): Promise<ITeamLeaderBoard[]> {
+    const setResult = new Set();
+
+    const leaderHome = await this.getLeader(game);
+
+    const boardLeader = leaderHome.filter((item) => {
+      const duplicatedTeam = setResult.has(item.name);
+      setResult.add(item.name);
+      return !duplicatedTeam;
+    });
+    return LeaderboardService.sortScore(boardLeader);
+  }
+
+  async getLeader(game: string): Promise<ITeamLeaderBoard[]> {
+    const matchesFinished = await this.matchesModel.getMatchesFinished();
+    return this.getScore(matchesFinished, game);
+  }
+
+  async getScore(matchesFinished: IMatch[], game: string) {
+    const leader: ITeamLeaderBoard[] = [];
+
+    const result = matchesFinished.map(async (match) => {
+      const obj = {
+        name: await this.getNames(match, game),
+        totalPoints: await this.getTotalPoints(match, game),
+        totalGames: (await this.getTotalGames(match, game)).length,
+        totalVictories: Math.trunc((await this.getTotalPoints(match, game) / 3)),
+        totalDraws: await this.getTotalDraws(match, game),
+        totalLosses: await this.getTotalLosses(match, game),
+        goalsFavor: await this.getGoalsFavor(match, game),
+        goalsOwn: await this.getGoalsOwns(match, game),
+        goalsBalance: await this.getGoalsBalance(match, game),
+        efficiency: (await this.getEfficiency(match, game)).toFixed(2),
+      };
+
+      leader.push(obj as unknown as ITeamLeaderBoard);
+    });
+
+    await Promise.all(result);
+    return leader;
   }
 }

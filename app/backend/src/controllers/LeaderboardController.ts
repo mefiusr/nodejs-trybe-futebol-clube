@@ -9,13 +9,13 @@ export default class LeaderboardController {
   ) {}
 
   async getScoreHome(_req: Request, res: Response): Promise<void> {
-    const result = await this.matchService.getLeaderBoard();
+    const result = await this.matchService.getLeaderBoard('home');
 
     res.status(200).json(result);
   }
 
   async getScoreAway(_req: Request, res: Response): Promise<void> {
-    const result = await this.matchService.getLeaderBoardAway();
+    const result = await this.matchService.getLeaderBoard('away');
 
     res.status(200).json(result);
   }

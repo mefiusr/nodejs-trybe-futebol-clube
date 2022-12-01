@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import HttpException from '../utils/http.exception';
 
-export default function matcheValidation(req: Request, res: Response, next: NextFunction) {
+export default function matcheValidation(req: Request, _res: Response, next: NextFunction) {
   const { homeTeam, awayTeam } = req.body;
 
   if (homeTeam === awayTeam) {
