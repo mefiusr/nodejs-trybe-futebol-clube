@@ -27,7 +27,7 @@ services:
         condition: service_healthy
     environment:
       - PORT=3001
-      - JWT_SECRET=jwt_secret
+      - JWTSECRET=jwt_secret
       # Os dados abaixo se referem ao container `db`
       # Dica: Relembre aqui da comunicação interna entre containers
       - MYSQLUSER=root
