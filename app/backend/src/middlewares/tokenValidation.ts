@@ -11,7 +11,7 @@ export default function authMiddleware(req: Request, _res: Response, next: NextF
   }
 
   try {
-    const decoded = jwt.verify(token as string, process.env.JWT_SECRET as string) as jwt.JwtPayload;
+    const decoded = jwt.verify(token as string, process.env.JWTSECRET as string) as jwt.JwtPayload;
 
     req.body.user = decoded;
 
