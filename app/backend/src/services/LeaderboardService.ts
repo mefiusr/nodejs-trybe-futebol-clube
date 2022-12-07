@@ -149,7 +149,8 @@ export default class LeaderboardService {
     return this.getScore(matchesFinished, game);
   }
 
-  async getScore(matchesFinished: IMatch[], game: string): Promise<ITeamLeaderBoard[]> {
+  async getScore(matchesFinished: IMatch[], game: string) {
+    const leader: ITeamLeaderBoard[] = [];
 
     const result = matchesFinished.map(async (match) => {
       const obj = {
@@ -164,9 +165,10 @@ export default class LeaderboardService {
         goalsBalance: await this.getGoalsBalance(match, game),
         efficiency: (await this.getEfficiency(match, game)).toFixed(2),
       };
-      return obj;
+
+      leader.push(obj as unknown as ITeamLeaderBoard);
     });
     await Promise.all(result);
-    return result as [];
+    return leader;
   }
 }
